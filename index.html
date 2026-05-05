@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz App</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#cfe9ff,#a8d8ff);
+}
+
+.app{
+    width:90%;
+    max-width:420px;
+    background:#f8fbff;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.15);
+}
+
+h1{
+    text-align:center;
+    color:#0369a1;
+    margin-bottom:15px;
+}
+
+#question{
+    font-size:18px;
+    color:#075985;
+    margin-bottom:20px;
+}
+
+.options button{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:10px;
+    background:#dbeafe;
+    color:#000; /* 🔥 FIXED TEXT */
+    font-size:15px;
+    font-weight:500;
+    text-align:left;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.options button:hover{
+    background:#bae6fd;
+}
+
+.selected{
+    background:#38bdf8 !important;
+    color:white !important;
+}
+
+.controls{
+    text-align:right;
+    margin-top:10px;
+}
+
+.next{
+    background:#0284c7;
+    color:white;
+    padding:10px 16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+#result{
+    text-align:center;
+    font-size:20px;
+    color:#0369a1;
+}
+
+.restart{
+    margin-top:15px;
+    background:#22c55e;
+    color:white;
+    padding:10px 16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+    <h1>Quiz</h1>
+
+    <div id="quiz-box">
+        <div id="question"></div>
+        <div class="options" id="options"></div>
+
+        <div class="controls">
+            <button class="next" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <div id="result" style="display:none;"></div>
+</div>
+
+<script>
+const quizData = [
+{q:"HTML stands for?",o:["Hyper Text Markup Language","High Text","Hyperlinks Text","None"],a:0},
+{q:"Tag for link?",o:["<a>","<link>","<href>","<url>"],a:0},
+{q:"CSS stands for?",o:["Cascading Style Sheets","Color Style","Computer Style","None"],a:0},
+{q:"Change text color?",o:["font-color","color","text-style","bg"],a:1},
+{q:"JS variable keyword?",o:["int","var","define","data"],a:1},
+{q:"Display flex?",o:["flex","display:flex","layout:flex","box"],a:1},
+{q:"HTML heading tag?",o:["<h1>","<head>","<p>","<title>"],a:0},
+{q:"JS output?",o:["print","console.log","echo","write"],a:1},
+{q:"CSS background?",o:["bg","background","color-bg","back"],a:1},
+{q:"Link CSS?",o:["<style>","<css>","<link>","<script>"],a:2},
+{q:"JS is?",o:["Compiled","Interpreted","Markup","None"],a:1},
+{q:"HTML list?",o:["<ul>","<li>","<ol>","All"],a:3},
+{q:"CSS border?",o:["line","border","edge","outline"],a:1},
+{q:"JS array?",o:["{}","[]","()","<>"],a:1},
+{q:"Function keyword?",o:["func","function","def","method"],a:1},
+{q:"HTML image?",o:["<img>","<image>","<pic>","<src>"],a:0},
+{q:"CSS flex align?",o:["align-items","justify","center","middle"],a:0},
+{q:"JS event click?",o:["onclick","onpress","click()","press"],a:0},
+{q:"HTML table?",o:["<table>","<tab>","<tr>","<td>"],a:0},
+{q:"CSS margin?",o:["space","margin","padding","gap"],a:1},
+{q:"JS loop?",o:["for","loop","repeat","cycle"],a:0},
+{q:"HTML form?",o:["<form>","<input>","<label>","All"],a:3},
+{q:"CSS position?",o:["pos","position","place","align"],a:1},
+{q:"JS string?",o:["''","\"\"","Both","None"],a:2},
+{q:"HTML paragraph?",o:["<p>","<para>","<text>","<t>"],a:0},
+{q:"CSS grid?",o:["grid","display:grid","layout","box"],a:1},
+{q:"JS condition?",o:["if","check","when","case"],a:0},
+{q:"HTML bold?",o:["<b>","<strong>","Both","None"],a:2},
+{q:"CSS padding?",o:["pad","padding","space","gap"],a:1},
+{q:"JS boolean?",o:["true/false","yes/no","1/0","on/off"],a:0}
+];
+
+let current=0, score=0, selected=null;
+
+function loadQuestion(){
+    let q=quizData[current];
+    document.getElementById("question").innerText=(current+1)+". "+q.q;
+
+    let html="";
+    q.o.forEach((opt,i)=>{
+        let safeOpt = opt.replace(/</g,"&lt;").replace(/>/g,"&gt;"); // 🔥 FIX
+        html+=`<button onclick="selectOption(${i},this)">${safeOpt}</button>`;
+    });
+
+    document.getElementById("options").innerHTML=html;
+    selected=null;
+}
+
+function selectOption(i,el){
+    selected=i;
+    document.querySelectorAll(".options button").forEach(b=>b.classList.remove("selected"));
+    el.classList.add("selected");
+}
+
+function nextQuestion(){
+    if(selected===null){
+        alert("Please select an option");
+        return;
+    }
+
+    if(selected===quizData[current].a) score++;
+
+    current++;
+
+    if(current<quizData.length){
+        loadQuestion();
+    }else{
+        document.getElementById("quiz-box").style.display="none";
+        document.getElementById("result").style.display="block";
+
+        document.getElementById("result").innerHTML=
+        `Your Score: ${score}/${quizData.length}<br>
+         <button class="restart" onclick="restart()">Restart</button>`;
+    }
+}
+
+function restart(){
+    current=0;
+    score=0;
+    selected=null;
+
+    document.getElementById("quiz-box").style.display="block";
+    document.getElementById("result").style.display="none";
+
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
