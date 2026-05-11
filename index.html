@@ -6,6 +6,7 @@
 <title>Quiz App</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -18,29 +19,49 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:linear-gradient(135deg,#cfe9ff,#a8d8ff);
+
+    /* LITTLE DARKER ONLY */
+    background:linear-gradient(
+        135deg,
+        #9ccff5,
+        #6fb6ea,
+        #4a98d4
+    );
 }
+
+/* APP */
 
 .app{
     width:90%;
     max-width:420px;
-    background:#f8fbff;
+
+    /* LITTLE DARKER CARD */
+    background:#e7f4ff;
+
     padding:25px;
     border-radius:20px;
-    box-shadow:0 15px 30px rgba(0,0,0,0.15);
+
+    box-shadow:
+        0 15px 30px rgba(0,0,0,0.18);
 }
+
+/* TITLE */
 
 h1{
     text-align:center;
-    color:#0369a1;
+    color:#035b8f;
     margin-bottom:15px;
 }
 
+/* QUESTION */
+
 #question{
     font-size:18px;
-    color:#075985;
+    color:#074b73;
     margin-bottom:20px;
 }
+
+/* OPTIONS */
 
 .options button{
     width:100%;
@@ -48,8 +69,11 @@ h1{
     margin-bottom:10px;
     border:none;
     border-radius:10px;
-    background:#dbeafe;
-    color:#000; /* 🔥 FIXED TEXT */
+
+    /* DARKER OPTION */
+    background:#c7e4ff;
+
+    color:#000;
     font-size:15px;
     font-weight:500;
     text-align:left;
@@ -58,65 +82,95 @@ h1{
 }
 
 .options button:hover{
-    background:#bae6fd;
+    background:#9fd4ff;
 }
 
+/* SELECTED */
+
 .selected{
-    background:#38bdf8 !important;
+    background:#2596de !important;
     color:white !important;
 }
+
+/* CONTROLS */
 
 .controls{
     text-align:right;
     margin-top:10px;
 }
 
+/* NEXT BUTTON */
+
 .next{
-    background:#0284c7;
+    background:#0369a1;
     color:white;
     padding:10px 16px;
     border:none;
     border-radius:10px;
     cursor:pointer;
+    transition:0.2s;
 }
+
+.next:hover{
+    background:#024f7a;
+}
+
+/* RESULT */
 
 #result{
     text-align:center;
     font-size:20px;
-    color:#0369a1;
+    color:#035b8f;
 }
+
+/* RESTART */
 
 .restart{
     margin-top:15px;
-    background:#22c55e;
+    background:#16a34a;
     color:white;
     padding:10px 16px;
     border:none;
     border-radius:10px;
     cursor:pointer;
+    transition:0.2s;
 }
+
+.restart:hover{
+    background:#15803d;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="app">
+
     <h1>Quiz</h1>
 
     <div id="quiz-box">
+
         <div id="question"></div>
+
         <div class="options" id="options"></div>
 
         <div class="controls">
-            <button class="next" onclick="nextQuestion()">Next</button>
+            <button class="next" onclick="nextQuestion()">
+                Next
+            </button>
         </div>
+
     </div>
 
     <div id="result" style="display:none;"></div>
+
 </div>
 
 <script>
+
 const quizData = [
+
 {q:"HTML stands for?",o:["Hyper Text Markup Language","High Text","Hyperlinks Text","None"],a:0},
 {q:"Tag for link?",o:["<a>","<link>","<href>","<url>"],a:0},
 {q:"CSS stands for?",o:["Cascading Style Sheets","Color Style","Computer Style","None"],a:0},
@@ -147,64 +201,122 @@ const quizData = [
 {q:"HTML bold?",o:["<b>","<strong>","Both","None"],a:2},
 {q:"CSS padding?",o:["pad","padding","space","gap"],a:1},
 {q:"JS boolean?",o:["true/false","yes/no","1/0","on/off"],a:0}
+
 ];
 
-let current=0, score=0, selected=null;
+let current = 0;
+let score = 0;
+let selected = null;
+
+/* LOAD QUESTION */
 
 function loadQuestion(){
-    let q=quizData[current];
-    document.getElementById("question").innerText=(current+1)+". "+q.q;
 
-    let html="";
+    let q = quizData[current];
+
+    document.getElementById("question").innerText =
+        (current + 1) + ". " + q.q;
+
+    let html = "";
+
     q.o.forEach((opt,i)=>{
-        let safeOpt = opt.replace(/</g,"&lt;").replace(/>/g,"&gt;"); // 🔥 FIX
-        html+=`<button onclick="selectOption(${i},this)">${safeOpt}</button>`;
+
+        let safeOpt =
+            opt.replace(/</g,"&lt;")
+               .replace(/>/g,"&gt;");
+
+        html += `
+        <button onclick="selectOption(${i},this)">
+            ${safeOpt}
+        </button>
+        `;
     });
 
-    document.getElementById("options").innerHTML=html;
-    selected=null;
+    document.getElementById("options").innerHTML =
+        html;
+
+    selected = null;
 }
 
+/* SELECT OPTION */
+
 function selectOption(i,el){
-    selected=i;
-    document.querySelectorAll(".options button").forEach(b=>b.classList.remove("selected"));
+
+    selected = i;
+
+    document
+        .querySelectorAll(".options button")
+        .forEach(btn=>{
+            btn.classList.remove("selected");
+        });
+
     el.classList.add("selected");
 }
 
+/* NEXT QUESTION */
+
 function nextQuestion(){
-    if(selected===null){
+
+    if(selected === null){
+
         alert("Please select an option");
+
         return;
     }
 
-    if(selected===quizData[current].a) score++;
+    if(selected === quizData[current].a){
+        score++;
+    }
 
     current++;
 
-    if(current<quizData.length){
-        loadQuestion();
-    }else{
-        document.getElementById("quiz-box").style.display="none";
-        document.getElementById("result").style.display="block";
+    if(current < quizData.length){
 
-        document.getElementById("result").innerHTML=
+        loadQuestion();
+    }
+
+    else{
+
+        document.getElementById("quiz-box")
+            .style.display = "none";
+
+        document.getElementById("result")
+            .style.display = "block";
+
+        document.getElementById("result").innerHTML =
+
         `Your Score: ${score}/${quizData.length}<br>
-         <button class="restart" onclick="restart()">Restart</button>`;
+
+        <button class="restart"
+        onclick="restart()">
+
+        Restart
+
+        </button>`;
     }
 }
 
-function restart(){
-    current=0;
-    score=0;
-    selected=null;
+/* RESTART */
 
-    document.getElementById("quiz-box").style.display="block";
-    document.getElementById("result").style.display="none";
+function restart(){
+
+    current = 0;
+    score = 0;
+    selected = null;
+
+    document.getElementById("quiz-box")
+        .style.display = "block";
+
+    document.getElementById("result")
+        .style.display = "none";
 
     loadQuestion();
 }
 
+/* START */
+
 loadQuestion();
+
 </script>
 
 </body>
